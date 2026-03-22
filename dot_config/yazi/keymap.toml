@@ -1,0 +1,5 @@
+[manager]
+prepend_keymap = [
+    { on = [ "<s-t>" ], run = 'shell --orphan --confirm kitty', desc = "Open terminal in current directory" },
+]
+ 

@@ -1,0 +1,12 @@
+[opener]
+code = [
+	{ run = "code %s", orphan = true }
+]
+
+[open]
+append_rules = [
+	{ url = "*", use = "code" },
+]
+
+[mgr]
+show_hidden = true
