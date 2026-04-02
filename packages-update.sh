@@ -5,7 +5,7 @@
 
 set -e
 
-PACKAGES_FILE="${0%/*}/packages.txt"
+PACKAGES_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/packages.txt"
 HOSTNAME=$(hostname)
 
 if [ ! -f "$PACKAGES_FILE" ]; then
