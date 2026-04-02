@@ -8,6 +8,9 @@ set -e
 echo "🔧 Running one-time setup tasks..."
 HOSTNAME=$(hostname)
 
+# Get absolute path to script directory (works even if run with relative paths)
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+
 # ============================================================================
 # System Update (IDEMPOTENT)
 # ============================================================================
@@ -45,9 +48,9 @@ fi
 echo ""
 echo "📥 Installing packages for $HOSTNAME..."
 
-PACKAGES_FILE="${0%/*}/packages.txt"
+PACKAGES_FILE="$SCRIPT_DIR/packages.txt"
 if [ ! -f "$PACKAGES_FILE" ]; then
-    echo "⚠️  packages.txt not found, skipping package installation"
+    echo "⚠️  packages.txt not found at: $PACKAGES_FILE"
 else
     # Parse packages.txt and filter by hostname
     # Include: lines without @, and lines with @HOSTNAME
