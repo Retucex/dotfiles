@@ -1,0 +1,10 @@
+# Machine-specific configuration data
+# Referenced in template files via .chezmoi variables
+
+desktopMonitors:
+  - "DP-1,preferred,1080x0,1.0"
+  - "DP-2,preferred,0x0,1,transform,3"
+  - "HDMI-A-1,preferred,4920x0,1,transform,1"
+
+laptopMonitors:
+  - ",preferred,auto,1.07"

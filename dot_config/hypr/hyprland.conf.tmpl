@@ -12,7 +12,7 @@ exec-once = hyprlauncher -d
 exec-once = gnome-keyring-daemon --start --components=secrets
 exec-once = udiskie -t &
 exec-once = [ -L ~/media ] || ln -sf /run/media/$USER/ ~/media
-exec-once = rclone mount onedrive: ~/onedrive --vfs-cache-mode writes --daemon
+exec-once = rclone mount onedrive: ~/onedrive --vfs-cache-mode full --daemon
 
 # exec-once = /opt/urserver/urserver --daemon     # Unified Remote - Config from: localhost:9510/web
 
@@ -39,7 +39,13 @@ cursor {
 ################
 
 # See https://wiki.hypr.land/Configuring/Monitors/
+{{- if eq .chezmoi.hostname "SamPC" }}
 monitor=,preferred,auto,1.07
+{{- else }}
+monitor=DP-1,preferred,1080x0,1.0
+monitor=DP-2,preferred,0x0,1,transform,3
+monitor=HDMI-A-1,preferred,4920x0,1,transform,1
+{{- end }}
 
 
 ###################
