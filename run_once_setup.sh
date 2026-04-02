@@ -8,8 +8,11 @@ set -e
 echo "🔧 Running one-time setup tasks..."
 HOSTNAME=$(hostname)
 
-# Get absolute path to script directory (works even if run with relative paths)
-SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+# Get absolute path to script directory (handles chezmoi symlinks)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+if [ -z "$SCRIPT_DIR" ]; then
+    SCRIPT_DIR="."
+fi
 
 # ============================================================================
 # System Update (IDEMPOTENT)
@@ -49,8 +52,19 @@ echo ""
 echo "📥 Installing packages for $HOSTNAME..."
 
 PACKAGES_FILE="$SCRIPT_DIR/packages.txt"
+
+# If packages.txt not in script dir, try common chezmoi locations
 if [ ! -f "$PACKAGES_FILE" ]; then
-    echo "⚠️  packages.txt not found at: $PACKAGES_FILE"
+    for potential_dir in ~/.local/share/chezmoi ~/.chezmoi /tmp/.chezmoi* ~/.config/chezmoi; do
+        if [ -f "$potential_dir/packages.txt" ]; then
+            PACKAGES_FILE="$potential_dir/packages.txt"
+            break
+        fi
+    done
+fi
+
+if [ ! -f "$PACKAGES_FILE" ]; then
+    echo "⚠️  packages.txt not found (tried: $SCRIPT_DIR and common locations)"
 else
     # Parse packages.txt and filter by hostname
     # Include: lines without @, and lines with @HOSTNAME

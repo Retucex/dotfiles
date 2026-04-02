@@ -5,15 +5,32 @@
 
 set -e
 
-PACKAGES_FILE="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/packages.txt"
+# Get absolute path to script directory (handles chezmoi symlinks)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+if [ -z "$SCRIPT_DIR" ]; then
+    SCRIPT_DIR="."
+fi
+
+PACKAGES_FILE="$SCRIPT_DIR/packages.txt"
+
+# If packages.txt not in script dir, try common chezmoi locations
+if [ ! -f "$PACKAGES_FILE" ]; then
+    for potential_dir in ~/.local/share/chezmoi ~/.chezmoi /tmp/.chezmoi* ~/.config/chezmoi; do
+        if [ -f "$potential_dir/packages.txt" ]; then
+            PACKAGES_FILE="$potential_dir/packages.txt"
+            break
+        fi
+    done
+fi
+
 HOSTNAME=$(hostname)
 
 if [ ! -f "$PACKAGES_FILE" ]; then
-    echo "❌ packages.txt not found: $PACKAGES_FILE"
+    echo "❌ packages.txt not found: tried $SCRIPT_DIR and common locations"
     exit 1
 fi
 
-echo "�� Scanning installed packages on $HOSTNAME..."
+echo "🔍 Scanning installed packages on $HOSTNAME..."
 echo ""
 
 # Get list of explicitly installed packages (not dependencies)
@@ -101,9 +118,9 @@ echo ""
 echo "✅ Updated packages.txt ($ADDED package(s) added)"
 echo ""
 echo "Changes:"
-git -C "${0%/*}" diff packages.txt
+git -C "$SCRIPT_DIR" diff packages.txt
 echo ""
 echo "Next: Commit and push these changes"
-echo "  cd ~/.local/share/chezmoi"
+echo "  cd $SCRIPT_DIR"
 echo "  git add packages.txt && git commit -m 'chore: update packages list'"
 echo "  git push"
