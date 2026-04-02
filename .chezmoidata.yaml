@@ -1,10 +1,12 @@
 # Machine-specific configuration data
-# Referenced in template files via .chezmoi variables
+# Referenced in template files via .chezmoi.hostname
 
+# Desktop: 3 monitors
 desktopMonitors:
   - "DP-1,preferred,1080x0,1.0"
   - "DP-2,preferred,0x0,1,transform,3"
   - "HDMI-A-1,preferred,4920x0,1,transform,1"
 
+# Laptop: Single monitor with auto-detect
 laptopMonitors:
   - ",preferred,auto,1.07"

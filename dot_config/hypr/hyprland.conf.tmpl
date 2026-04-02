@@ -39,9 +39,9 @@ cursor {
 ################
 
 # See https://wiki.hypr.land/Configuring/Monitors/
-{{- if eq .chezmoi.hostname "SamPC" }}
+{{- if eq .chezmoi.hostname "sam-x1" }}
 monitor=,preferred,auto,1.07
-{{- else }}
+{{- else if eq .chezmoi.hostname "SamPC" }}
 monitor=DP-1,preferred,1080x0,1.0
 monitor=DP-2,preferred,0x0,1,transform,3
 monitor=HDMI-A-1,preferred,4920x0,1,transform,1
