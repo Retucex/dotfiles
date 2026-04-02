@@ -1,0 +1,193 @@
+# Copilot CLI Instructions - Linux Configuration Management
+
+## Overview
+You are assisting with managing a multi-machine Linux dotfiles setup using **chezmoi**. The environment includes:
+- **SamPC** (Desktop): Hyprland WM with 3 monitors (DP-1, DP-2, HDMI-A-1)
+- **sam-x1** (Laptop): Hyprland WM with 1 monitor (auto-detect)
+
+Dotfiles repo: `~/.local/share/chezmoi/` (GitHub: Retucex/dotfiles)
+
+**Current Machine:** `{{ .chezmoi.hostname }}` 
+{{- if eq .chezmoi.hostname "SamPC" }} (Desktop) {{- else if eq .chezmoi.hostname "sam-x1" }} (Laptop) {{- end }}
+
+## Critical Rules for Config Changes
+
+### 1. ALWAYS Check if Changes Are Machine-Specific
+**Before editing any config file:**
+- Ask yourself: "Does this config differ between SamPC and sam-x1?"
+- If YES → Use `.tmpl` file with hostname conditionals
+- If NO → Use regular file (applies to both machines)
+
+{{- if eq .chezmoi.hostname "SamPC" }}
+
+### Machine-Specific Note: SamPC (Desktop)
+You are currently on **SamPC**, the desktop machine with 3 monitors:
+- **Monitors:** DP-1 (1080x0), DP-2 (0x0 with rotation), HDMI-A-1 (4920x0 with rotation)
+- **Special considerations:**
+  - Monitor-related configs (hyprland.conf, waybar) should account for 3-display setup
+  - Keybindings for multi-monitor navigation are common here
+  - Use template conditionals for desktop-only settings (see examples below)
+  
+**Example desktop check in templates:**
+```bash
+# In your .tmpl files, use this pattern:
+# {{- if eq .chezmoi.hostname "SamPC" }}
+# 3-monitor specific config
+# monitor=DP-1,preferred,1080x0,1.0
+# {{- else if eq .chezmoi.hostname "sam-x1" }}
+# Laptop single monitor
+# monitor=,preferred,auto,1.07
+# {{- end }}
+```
+
+{{- else if eq .chezmoi.hostname "sam-x1" }}
+
+### Machine-Specific Note: sam-x1 (Laptop)
+You are currently on **sam-x1**, the laptop with single monitor auto-detect:
+- **Monitor:** Auto-detects and scales at 1.07x
+- **Special considerations:**
+  - Monitor config uses auto-detection (simpler than desktop)
+  - Keyboard layout might be more compact
+  - Power management (tlp, tlp-rdw) is laptop-specific
+  - Use template conditionals for laptop-only settings (see examples below)
+
+**Example laptop check in templates:**
+```bash
+# In your .tmpl files, use this pattern:
+# {{- if eq .chezmoi.hostname "sam-x1" }}
+# Laptop single monitor auto-detect
+# monitor=,preferred,auto,1.07
+# {{- else if eq .chezmoi.hostname "SamPC" }}
+# Desktop 3-monitor setup
+# monitor=DP-1,preferred,1080x0,1.0
+# {{- end }}
+```
+
+{{- end }}
+
+### 2. Template Pattern for Machine-Specific Configs
+```bash
+# In your .tmpl files, use this pattern:
+# {{- if eq .chezmoi.hostname "sam-x1" }}
+# # Laptop-specific config
+# monitor=,preferred,auto,1.07
+# {{- else if eq .chezmoi.hostname "SamPC" }}
+# # Desktop-specific config
+# monitor=DP-1,preferred,1080x0,1.0
+# {{- end }}
+```
+
+### 3. Workflow for Config Changes
+
+1. **Identify the config file** in `~/.local/share/chezmoi/dot_config/`
+2. **Determine scope**:
+   - Is it machine-specific? If yes, use `.tmpl` extension
+   - Does it already have `.tmpl`? If yes, add/modify hostname conditionals
+3. **Make changes** in the chezmoi source (not in ~/.config directly)
+4. **Test locally** with `chezmoi diff` and `chezmoi apply`
+5. **Sync packages** if needed: `~/.local/share/chezmoi/packages-update.sh`
+6. **Commit to git** with descriptive message including machine scope
+
+### 4. Git Commit Messages
+Format: `<type>: <description> (machine: <scope>)`
+
+Examples:
+```bash
+# Universal change
+git commit -m "feat: add custom keybinding to hyprland (machine: universal)"
+git commit -m "chore: update kitty theme config (machine: universal)"
+
+# Desktop-only change
+git commit -m "feat: adjust monitor layout for 3-monitor setup (machine: SamPC)"
+
+# Laptop-specific change
+git commit -m "fix: auto-detect monitor on boot (machine: sam-x1)"
+
+# Changes affecting both but with different configs
+git commit -m "feat: customize waybar appearance (machine: both)"
+```
+
+### 5. Adding New Config Files
+
+```bash
+# Step 1: Copy from your live config
+cp ~/.config/app/config ~/.local/share/chezmoi/dot_config/app/config
+
+# Step 2: If machine-specific, convert to template
+mv ~/.local/share/chezmoi/dot_config/app/config \
+   ~/.local/share/chezmoi/dot_config/app/config.tmpl
+
+# Step 3: Add hostname conditionals if needed
+# Edit the .tmpl file with conditional logic
+
+# Step 4: Test
+cd ~/.local/share/chezmoi
+chezmoi diff
+chezmoi apply
+
+# Step 5: Commit
+git add dot_config/app/
+git commit -m "feat: add app config (machine: <scope>)"
+git push
+```
+
+### 6. When to Use `.chezmoidata.yaml`
+Add machine-specific data (like monitor configs) here, reference in `.tmpl` files:
+
+```yaml
+# Example in .chezmoidata.yaml
+desktopMonitors:
+  - "DP-1,preferred,1080x0,1.0"
+
+# Reference in hyprland.conf.tmpl
+{{ range .desktopMonitors }}
+monitor={{ . }}
+{{ end }}
+```
+
+## Useful Commands
+
+```bash
+# View current machine info
+chezmoi data | grep -E "(hostname|os)"
+
+# Preview changes
+chezmoi diff
+
+# See what would be applied
+chezmoi diff -- ~/.config/app/config
+
+# Apply changes to system
+chezmoi apply
+
+# Manually trigger packages sync
+~/.local/share/chezmoi/packages-update.sh
+
+# Re-run setup
+bash ~/.local/share/chezmoi/run_once_setup.sh
+
+# Check git status in chezmoi repo
+cd ~/.local/share/chezmoi && git status
+
+# View template rendering (test template without applying)
+chezmoi execute-template < ~/.local/share/chezmoi/dot_config/hypr/hyprland.conf.tmpl
+```
+
+## Important Paths
+
+- **Dotfiles source:** `~/.local/share/chezmoi/`
+- **Tracked configs:** `~/.local/share/chezmoi/dot_config/`
+- **Config template:** `~/.local/share/chezmoi/.chezmoi.toml.tmpl`
+- **Machine data:** `~/.local/share/chezmoi/.chezmoidata.yaml`
+- **Git repo:** Same as source
+
+## Safety Guidelines
+
+- ✅ Always test with `chezmoi diff` before applying
+- ✅ Chezmoi backs up modified files automatically
+- ✅ Use templates for multi-machine configs
+- ✅ Commit frequently with clear messages
+- ✅ Push to origin to sync with other machines
+- ❌ Don't edit configs directly in ~/.config (edit in chezmoi source instead)
+- ❌ Don't forget to handle machine-specific configs with templates
+- ❌ Don't push untested changes
