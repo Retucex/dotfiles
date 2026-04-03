@@ -16,7 +16,8 @@ exec-once = hyprlauncher -d
 exec-once = gnome-keyring-daemon --start --components=secrets
 exec-once = udiskie -t &
 exec-once = [ -L ~/media ] || ln -sf /run/media/$USER/ ~/media
-exec-once = rclone mount onedrive: ~/onedrive --vfs-cache-mode full --daemon
+exec-once = rclone mount onedrive: ~/onedrive --vfs-cache-mode full --daemon --log-file=/tmp/rclone.log --log-level DEBUG
+
 
 # exec-once = /opt/urserver/urserver --daemon     # Unified Remote - Config from: localhost:9510/web
 
