@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Usage: ./vault.sh <encrypted_directory>
+# Example: ./vault.sh my_vault
+# Results: Mounts/Unmounts to my_vault_unlk
+
+ENC_DIR="$1"
+MOUNT_DIR="${ENC_DIR}_unlk"
+
+# 1. Validation: Does the source encrypted folder actually exist?
+if [ ! -d "$ENC_DIR" ]; then
+    echo "Error: Encrypted directory '$ENC_DIR' does not exist."
+    exit 1
+fi
+
+# 2. Toggle Logic: Is it already mounted?
+if mountpoint -q "$MOUNT_DIR"; then
+    echo "Unmounting $MOUNT_DIR..."
+    fusermount -u "$MOUNT_DIR"
+    
+    # Check if unmount succeeded before deleting the folder
+    if [ $? -eq 0 ]; then
+        rmdir "$MOUNT_DIR"
+        echo "Vault locked and directory removed."
+    else
+        echo "Error: Could not unmount. Is a file or terminal still open in that folder?"
+    fi
+else
+    # 3. Create mount point if it doesn't exist
+    if [ ! -d "$MOUNT_DIR" ]; then
+        mkdir -p "$MOUNT_DIR"
+    fi
+
+    # 4. Attempt to mount
+    echo "Mounting $ENC_DIR..."
+    gocryptfs "$ENC_DIR" "$MOUNT_DIR"
+    
+    if [ $? -eq 0 ]; then
+        echo "Vault unlocked! Access files at: $MOUNT_DIR"
+    else
+        # Cleanup folder if the mount failed (e.g., wrong password)
+        rmdir "$MOUNT_DIR"
+        echo "Mount failed."
+    fi
+fi
