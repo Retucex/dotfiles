@@ -45,9 +45,3 @@ abbr --add fcc fish_clipboard_copy
 #######################
 
 set -gx EDITOR code
-
-#######################
-######## THEME ########
-#######################
-
-fish_config theme choose "Rosé Pine Moon Auto"
