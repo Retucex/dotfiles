@@ -2,10 +2,18 @@
 code = [
 	{ run = "code %s", orphan = true }
 ]
+vlc = [
+    { run = 'vlc "$@"', orphan = true, desc = "Open in VLC", for = "unix" },
+]
 
 [open]
 append_rules = [
 	{ url = "*", use = "code" },
+]
+rules = [
+    # Match all video MIME types and use the 'vlc' opener
+    { mime = "video/*", use = "vlc" },
+    { name = "*/", use = "code" },
 ]
 
 [mgr]
