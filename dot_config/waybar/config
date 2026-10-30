@@ -7,7 +7,7 @@
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces", "idle_inhibitor", "pulseaudio", "backlight", "network", "bluetooth", "custom/updates"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["hyprland/submap", "hyprland/language", "cpu", "memory", "temperature", "battery", "tray", "clock"],
+    "modules-right": ["hyprland/submap", "hyprland/language", "cpu", "memory", "temperature", "battery", "custom/urserver", "tray", "clock"],
     // Modules configuration
      "hyprland/workspaces": {
          "disable-scroll": true,
@@ -192,6 +192,14 @@
         },
         "exec-if": "which waybar-module-pacman-updates",
         "exec": "waybar-module-pacman-updates --interval-seconds 5 --network-interval-seconds 300 --arrow-style ➤ --tooltip-align-columns 'Source Code Pro' --color-semver-updates F15D22,FFCE51,73C48F,48B9C7,88807C --column-color-overrides '3=EEEEEC,4=AD7FA8'"
+    },
+    "custom/urserver": {
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/urserver.sh",
+        "interval": 5,
+        "signal": 8,
+        "on-click": "systemctl --user stop urserver.service; pkill -RTMIN+8 waybar",
+        "on-click-right": "xdg-open http://localhost:9510/web"
     },
     "bluetooth": {
         "format": " {status}",
