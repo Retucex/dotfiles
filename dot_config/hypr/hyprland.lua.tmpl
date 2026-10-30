@@ -306,6 +306,8 @@ for i = 1, 10 do
     bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }), "Move window to workspace " .. i)
 end
 
+bind(mainMod .. " + N", hl.dsp.exec_cmd("~/.config/hypr/scripts/next_empty.sh"), "Switch to first empty workspace on current monitor")
+
 -- Example special workspace (scratchpad)
 bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"),            "Toggle scratchpad")
 bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), "Move active to scratchpad")
