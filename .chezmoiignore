@@ -1,0 +1,4 @@
+# Desktop-only: Sunshine game streaming (headless display + monitor toggles)
+{{ if ne .chezmoi.hostname "SamPC" }}
+.config/sunshine
+{{ end }}
