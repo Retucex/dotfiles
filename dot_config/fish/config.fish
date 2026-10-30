@@ -39,9 +39,18 @@ abbr --add pacs pacman -Ss          # Search database
 
 abbr --add fcc fish_clipboard_copy
 
+abbr --add aider aider --model ollama_chat/batiai/qwen3.6-35b:iq4 --edit-format whole
+
+abbr --add ai interpreter --model ollama/batiai/qwen3.6-35b:iq4 --api_base http://127.0.0.1:11434 --safe_mode ask --no-llm_supports_functions -y
+
+
 
 #######################
 ###### VARIABLES ######
 #######################
 
 set -gx EDITOR code
+
+
+# Point Aider to your local ROCm Ollama instance
+set -gx OLLAMA_API_BASE "http://127.0.0.1:11434"

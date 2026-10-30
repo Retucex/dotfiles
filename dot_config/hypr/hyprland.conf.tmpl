@@ -8,9 +8,9 @@ exec-once = systemctl --user start hyprpolkitagent
 exec-once = waybar
 exec-once = dunst
 {{- if eq .chezmoi.hostname "SamPC" }}
-exec-once = swaybg -o DP-1 -i ~/.config/sukuna-electric.jpg
-exec-once = swaybg -o DP-2 -i ~/.config/abstract-dark-waves-mirrored.jpg
-exec-once = swaybg -o HDMI-A-1 -i ~/.config/abstract-dark-waves.jpg
+exec-once = swaybg -o DP-2 -i ~/.config/sukuna-electric.jpg
+exec-once = swaybg -o HDMI-A-2 -i ~/.config/abstract-dark-waves-mirrored.jpg
+exec-once = swaybg -o DP-1 -i ~/.config/abstract-dark-waves.jpg
 {{- else if eq .chezmoi.hostname "sam-x1" }}
 exec-once = swaybg -i ~/.config/background.png
 {{- end }}
@@ -24,6 +24,8 @@ exec-once = fusermount -u -z ~/onedrive || true && rclone mount onedrive: ~/oned
 # Hides the cursor after 1 second
 cursor {
     inactive_timeout = 1
+    no_hardware_cursors = false
+    sync_gsettings_theme = true
 }
 # No mo shit
 
@@ -38,18 +40,36 @@ cursor {
 # Create your files separately and then link them to this file like this:
 # source = ~/.config/hypr/myColors.conf
 
-
 ################
 ### MONITORS ###
 ################
-
-# See https://wiki.hypr.land/Configuring/Monitors/
 {{- if eq .chezmoi.hostname "sam-x1" }}
+
 monitor=,preferred,auto,1.07
+
 {{- else if eq .chezmoi.hostname "SamPC" }}
-monitor=DP-1,preferred,1080x0,1.0
-monitor=DP-2,preferred,0x0,1,transform,3
-monitor=HDMI-A-1,preferred,4920x0,1,transform,1
+
+# Left Monitor: BenQ 1080p (Rotated Portrait + 180 deg flip)
+# Physically HDMI-A-2. Positioned at the far left origin (0x0).
+monitor=HDMI-A-2, 1920x1080@60, 0x0, 1, transform, 1
+
+# Center Monitor: ASUS PG42UQ 4K (Main Landscape)
+# Placed right after the left screen's width (at 1080x0).
+monitor=DP-2, 3840x2160@120, 1080x0, 1
+
+# Right Monitor: BenQ 1080p (Rotated Portrait + 180 deg flip)
+# Physically DP-1. Placed at 4920x0.
+monitor=DP-1, 1920x1080@120, 4920x0, 1, transform, 3
+
+
+######################
+### WORKSPACE RULES ###
+######################
+
+# Bind workspaces to specific monitors
+workspace = 1, monitor:DP-2, default:true
+workspace = 2, monitor:HDMI-A-2, default:true
+workspace = 3, monitor:DP-1, default:true
 {{- end }}
 
 
@@ -70,7 +90,7 @@ $menu = hyprlauncher
 #################
 
 # Autostart necessary processes (like notifications daemons, status bars, etc.)
-# Or execute your favorite apps at launch like this:
+# Or execute your favorite apps at launch like this:I 
 
 # exec-once = $terminal
 # exec-once = nm-applet &
@@ -215,7 +235,7 @@ animations {
 #     rounding = 0
 # }
 
-# # See https://wiki.hypr.land/Configuring/Dwindle-Layout/ for more
+# See https://wiki.hypr.land/Configuring/Dwindle-Layout/ for more
 # dwindle {
 #     pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
 #     preserve_split = true # You probably want this
@@ -285,7 +305,8 @@ bindd = $mainMod, R, Hyprlauncher, exec, hyprlauncher
 bindrd = $mainMod, L, Lock screen, exec, hyprlock
 binddo = $mainMod, L, Logout (long press), exec, command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit
 bindd = $mainMod, A, Firefox - Google AI, exec, firefox --new-window google.com/ai
-bindd = , Print, Take a screenshot of a window or an area, exec, grimblast copysave area
+bind = , PRINT, exec, hyprshot -m output # Full screen
+bind = , Print, exec, grimblast copysave area
 
 
 # Move focus with mainMod + arrow keys
@@ -312,7 +333,9 @@ bindd = $mainMod, 8, Switch to workspace 8, workspace, 8
 bindd = $mainMod, 9, Switch to workspace 9, workspace, 9
 bindd = $mainMod, 0, Switch to workspace 10, workspace, 10
 
+# Switch to first empty workspace with mainMod + N, or move active window to first empty workspace with mainMod + SHIFT + N
 bindd = $mainMod, N, Switch to first empty workspace on current monitor, exec, ~/.config/hypr/scripts/next_empty.sh
+bindd = $mainMod SHIFT, N, Move active window to first empty workspace, exec, ~/.config/hypr/scripts/move_to_next.sh
 
 # Move active window to a workspace with mainMod + SHIFT + [0-9]
 bindd = $mainMod SHIFT, 1, Move window to workspace 1, movetoworkspace, 1
@@ -394,4 +417,10 @@ windowrule {
 
     move = 20 monitor_h-120
     float = yes
+}
+
+layerrule {
+  name = no_anim_for_selection
+  no_anim = on
+  match:namespace = selection
 }
