@@ -56,6 +56,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("swaybg -o DP-2 -i ~/.config/sukuna-electric.jpg")
     hl.exec_cmd("swaybg -o HDMI-A-2 -i ~/.config/abstract-dark-waves-mirrored.jpg")
     hl.exec_cmd("swaybg -o DP-1 -i ~/.config/abstract-dark-waves.jpg")
+    -- Make the 4K monitor primary for Xwayland so Wine/Proton games detect the right display
+    hl.exec_cmd("xrandr --output DP-2 --primary")
 {{- else if eq .chezmoi.hostname "sam-x1" }}
     hl.exec_cmd("swaybg -i ~/.config/background.png")
 {{- end }}

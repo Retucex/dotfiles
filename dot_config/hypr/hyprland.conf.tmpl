@@ -11,6 +11,8 @@ exec-once = dunst
 exec-once = swaybg -o DP-2 -i ~/.config/sukuna-electric.jpg
 exec-once = swaybg -o HDMI-A-2 -i ~/.config/abstract-dark-waves-mirrored.jpg
 exec-once = swaybg -o DP-1 -i ~/.config/abstract-dark-waves.jpg
+# Make the 4K monitor primary for Xwayland so Wine/Proton games detect the right display
+exec-once = xrandr --output DP-2 --primary
 {{- else if eq .chezmoi.hostname "sam-x1" }}
 exec-once = swaybg -i ~/.config/background.png
 {{- end }}
