@@ -1,4 +1,5 @@
 # Desktop-only: Sunshine game streaming (headless display + monitor toggles)
 {{ if ne .chezmoi.hostname "SamPC" }}
 .config/sunshine
+.config/wireplumber/wireplumber.conf.d/51-bluetooth-no-autoswitch.conf
 {{ end }}
