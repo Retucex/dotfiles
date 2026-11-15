@@ -228,8 +228,9 @@ hl.bind(key("L"),     hl.dsp.exec_cmd("hyprlock"),                    { descript
 hl.bind(key("L"),     hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"),
                                                                       { description = "Logout (long press)", long_press = true })
 hl.bind(key("A"),     hl.dsp.exec_cmd("firefox --new-window google.com/ai"), { description = "Firefox - Google AI" })
-hl.bind("PRINT",      hl.dsp.exec_cmd("hyprshot -m output"))          -- Full screen
-hl.bind("Print",      hl.dsp.exec_cmd("grimblast copysave area"))
+hl.bind("Print",      hl.dsp.exec_cmd("grimblast copy area"),         { description = "Screenshot area to clipboard", release = true })
+hl.bind("Print",      hl.dsp.exec_cmd("mkdir -p ~/Pictures/Screenshots && grimblast save area ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"),
+                                                                      { description = "Screenshot area to file (long press)", long_press = true })
 hl.bind(key("CTRL + SHIFT + M"), hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-monitors.fish"),
                                                                       { description = "Toggle all monitors on/off", locked = true })
 

@@ -307,8 +307,8 @@ bindd = $mainMod, R, Hyprlauncher, exec, hyprlauncher
 bindrd = $mainMod, L, Lock screen, exec, hyprlock
 binddo = $mainMod, L, Logout (long press), exec, command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit
 bindd = $mainMod, A, Firefox - Google AI, exec, firefox --new-window google.com/ai
-bind = , PRINT, exec, hyprshot -m output # Full screen
-bind = , Print, exec, grimblast copysave area
+bindrd = , Print, Screenshot area to clipboard, exec, grimblast copy area
+binddo = , Print, Screenshot area to file (long press), exec, mkdir -p ~/Pictures/Screenshots && grimblast save area ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
 
 
 # Move focus with mainMod + arrow keys
