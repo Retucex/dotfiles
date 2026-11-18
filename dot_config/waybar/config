@@ -7,7 +7,7 @@
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces", "idle_inhibitor", "pulseaudio", "backlight", "network", "bluetooth", "custom/updates"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["hyprland/submap", "hyprland/language", "cpu", "memory", "temperature", "battery", "custom/urserver", "tray", "clock"],
+    "modules-right": ["hyprland/submap", "hyprland/language", "cpu", "memory", "temperature", "upower", "custom/urserver", "tray", "clock"],
     // Modules configuration
      "hyprland/workspaces": {
          "disable-scroll": true,
@@ -117,22 +117,14 @@
         "format": "{percent}% {icon}",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% 🗲",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
-    },
-    "battery#bat2": {
-        "bat": "BAT2"
+    // upower instead of battery: the battery module crashes waybar when a device
+    // battery (e.g. Steam Controller) disappears mid-scan (Waybar #4901/#5019).
+    "upower": {
+        "hide-if-empty": true,
+        "show-icon": false,
+        "format": "{percentage} ",
+        "format-alt": "{percentage} {time}",
+        "tooltip": true
     },
     "network": {
         "interface": "wlan0", // (Optional) To force the use of this interface
